@@ -1,6 +1,7 @@
 package org.foi.asankovic.spring5recipeapp.domain;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 public class Recipe {
@@ -15,8 +16,12 @@ public class Recipe {
     private Integer servings;
     private String source;
     private String url;
-    //todo add
-    //private Difficulty difficulty;
+
+    @Enumerated(value = EnumType.STRING)
+    private Difficulty difficulty;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe")
+    private Set<Ingredient> ingredients;
 
     @Lob
     private Byte[] image;
@@ -80,12 +85,20 @@ public class Recipe {
         this.url = url;
     }
 
-    public Notes getNotes() {
-        return notes;
+    public Difficulty getDifficulty() {
+        return difficulty;
     }
 
-    public void setNotes(Notes notes) {
-        this.notes = notes;
+    public void setDifficulty(Difficulty difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public Set<Ingredient> getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(Set<Ingredient> ingredients) {
+        this.ingredients = ingredients;
     }
 
     public Byte[] getImage() {
@@ -94,5 +107,13 @@ public class Recipe {
 
     public void setImage(Byte[] image) {
         this.image = image;
+    }
+
+    public Notes getNotes() {
+        return notes;
+    }
+
+    public void setNotes(Notes notes) {
+        this.notes = notes;
     }
 }
