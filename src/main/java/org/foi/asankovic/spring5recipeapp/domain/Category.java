@@ -4,6 +4,7 @@ import org.yaml.snakeyaml.events.Event;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 /**

@@ -6,5 +6,23 @@
 </head>
 <body>
 <h1 th:text="'Recipe App Homepage'">Test Title</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th th:text="ID">ID</th>
+            <th th:text="Description">Description</th>
+            <th th:text="Directions">Directions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="recipe : ${recipes}">
+            <td th:text="${recipe.id}">123</td>
+            <td th:text="${recipe.description}">Test description</td>
+            <td th:text="${recipe.directions}">Test directions</td>
+        </tr>
+    </tbody>
+</table>
+
 </body>
 </html>
