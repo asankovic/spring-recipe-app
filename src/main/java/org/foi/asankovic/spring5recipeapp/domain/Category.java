@@ -1,5 +1,6 @@
 package org.foi.asankovic.spring5recipeapp.domain;
 
+import lombok.*;
 import org.yaml.snakeyaml.events.Event;
 
 import javax.persistence.*;
@@ -10,6 +11,8 @@ import java.util.Set;
 /**
  * Created by Sankovic on 27.7.2021.
  */
+@Data
+@EqualsAndHashCode(exclude = {"recipes"})
 @Entity
 public class Category {
 
@@ -22,27 +25,4 @@ public class Category {
     @ManyToMany(mappedBy = "categories")
     private Set<Recipe> recipes;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Set<Recipe> getRecipes() {
-        return recipes;
-    }
-
-    public void setRecipes(Set<Recipe> recipes) {
-        this.recipes = recipes;
-    }
 }

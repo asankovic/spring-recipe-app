@@ -1,5 +1,6 @@
 package org.foi.asankovic.spring5recipeapp.controllers;
 
+import lombok.extern.slf4j.Slf4j;
 import org.foi.asankovic.spring5recipeapp.domain.Category;
 import org.foi.asankovic.spring5recipeapp.domain.UnitOfMeasure;
 import org.foi.asankovic.spring5recipeapp.repositories.CategoryRepository;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Optional;
 
+@Slf4j
 @Controller
 public class IndexController {
 
@@ -24,6 +26,7 @@ public class IndexController {
 
     @RequestMapping({"","/","/index"})
     public String index(Model model){
+        log.debug("Test controller log");
         model.addAttribute("recipes", recipeService.getAllRecipes());
         return "index";
     }
