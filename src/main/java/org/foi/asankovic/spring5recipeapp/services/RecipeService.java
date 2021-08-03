@@ -1,5 +1,6 @@
 package org.foi.asankovic.spring5recipeapp.services;
 
+import org.foi.asankovic.spring5recipeapp.commands.RecipeCommand;
 import org.foi.asankovic.spring5recipeapp.domain.Recipe;
 
 import java.util.Set;
@@ -10,4 +11,8 @@ import java.util.Set;
 public interface RecipeService {
 
     public Set<Recipe> getAllRecipes();
+
+    Recipe findById(Long id);
+
+    RecipeCommand saveRecipeCommand(RecipeCommand command);
 }
