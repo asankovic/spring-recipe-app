@@ -2,6 +2,7 @@ package org.foi.asankovic.spring5recipeapp.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.foi.asankovic.spring5recipeapp.commands.IngredientCommand;
+import org.foi.asankovic.spring5recipeapp.commands.RecipeCommand;
 import org.foi.asankovic.spring5recipeapp.services.IngredientService;
 import org.foi.asankovic.spring5recipeapp.services.RecipeService;
 import org.foi.asankovic.spring5recipeapp.services.UnitOfMeasureService;
@@ -51,6 +52,26 @@ public class IngredientController {
                 ingredientService.findByRecipeIdAndIngredientId(Long.valueOf(recipeId), Long.valueOf(ingredientId)));
         model.addAttribute("uomList", unitOfMeasureService.getAllUoms());
         return "recipe/ingredient/ingredientForm";
+    }
+
+    @GetMapping("/recipe/{recipeId}/ingredient/new")
+    public String newRecipe(Model model, @PathVariable String recipeId){
+        RecipeCommand recipeCommand = recipeService.findCommandById(Long.valueOf(recipeId));
+        //todo raise exception if null
+
+        model.addAttribute("uomList", unitOfMeasureService.getAllUoms());
+
+        IngredientCommand ingredientCommand = new IngredientCommand();
+        ingredientCommand.setRecipeId(Long.valueOf(recipeId));
+        model.addAttribute("ingredient", ingredientCommand);
+
+        return "recipe/ingredient/ingredientForm";
+    }
+
+    @GetMapping("/recipe/{recipeId}/ingredient/{ingredientId}/delete")
+    public String deleteIngredient(@PathVariable String recipeId, @PathVariable String ingredientId){
+        ingredientService.deleteById(Long.valueOf(recipeId),Long.valueOf(ingredientId));
+        return "redirect:/recipe/" + recipeId + "/ingredients";
     }
 
     @PostMapping("/recipe/{recipeId}/ingredient")

@@ -1,6 +1,7 @@
 package org.foi.asankovic.spring5recipeapp.services;
 
 import org.foi.asankovic.spring5recipeapp.commands.IngredientCommand;
+import org.foi.asankovic.spring5recipeapp.commands.RecipeCommand;
 import org.foi.asankovic.spring5recipeapp.converters.IngredientCommandToIngredient;
 import org.foi.asankovic.spring5recipeapp.converters.IngredientToIngredientCommand;
 import org.foi.asankovic.spring5recipeapp.converters.UnitOfMeasureCommandToUnitOfMeasure;
@@ -102,5 +103,22 @@ class IngredientServiceImplTest {
         verify(recipeRepository).findById(anyLong());
         verify(recipeRepository).save(any(Recipe.class));
 
+    }
+
+    @Test
+    void deleteById() {
+        Recipe recipe = new Recipe();
+        Ingredient ingredient = new Ingredient();
+        ingredient.setId(2L);
+        recipe.addIngredient(ingredient);
+        ingredient.setRecipe(recipe);
+        Optional<Recipe> optionalRecipe = Optional.of(recipe);
+
+        when(recipeRepository.findById(anyLong())).thenReturn(optionalRecipe);
+
+        ingredientService.deleteById(1L, 2L);
+
+        verify(recipeRepository).findById(anyLong());
+        verify(recipeRepository).save(any(Recipe.class));
     }
 }

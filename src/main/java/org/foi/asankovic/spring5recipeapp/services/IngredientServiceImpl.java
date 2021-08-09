@@ -83,7 +83,45 @@ public class IngredientServiceImpl implements IngredientService{
 
         Recipe savedRecipe = recipeRepository.save(recipe);
 
-        return ingredientToIngredientCommand.convert(savedRecipe.getIngredients()
-                .stream().filter(ingredient -> ingredient.getId().equals(command.getId())).findFirst().get());
+        Optional<Ingredient> savedIngredientOptional = savedRecipe.getIngredients().stream()
+                .filter(recipeIngredients -> recipeIngredients.getId().equals(command.getId()))
+                .findFirst();
+
+        //check by description
+        if(!savedIngredientOptional.isPresent()){
+            //not totally safe
+            savedIngredientOptional = savedRecipe.getIngredients().stream()
+                    .filter(recipeIngredients -> recipeIngredients.getDescription().equals(command.getDescription()))
+                    .filter(recipeIngredients -> recipeIngredients.getAmount().equals(command.getAmount()))
+                    .filter(recipeIngredients -> recipeIngredients.getUom().getId().equals(command.getUom().getId()))
+                    .findFirst();
+        }
+
+        //todo check for fail
+        return ingredientToIngredientCommand.convert(savedIngredientOptional.get());
+    }
+
+    @Override
+    public void deleteById(Long recipeId, Long ingredientId) {
+        Optional<Recipe> optionalRecipe = recipeRepository.findById(recipeId);
+
+        if(optionalRecipe.isEmpty()){
+            log.error("Recipe not found for id: " + recipeId);
+            return;
+        }
+        Recipe recipe = optionalRecipe.get();
+        Optional<Ingredient> optionalIngredient = recipe.getIngredients().stream()
+                .filter(ingredient -> ingredient.getId().equals(ingredientId))
+                .findFirst();
+
+        if(optionalIngredient.isPresent()){
+            Ingredient ingredient = optionalIngredient.get();
+            ingredient.setRecipe(null);
+            recipe.getIngredients().remove(ingredient);
+            recipeRepository.save(recipe);
+        }
+        else {
+            log.debug("Recipe Id Not found. Id:" + recipeId);
+        }
     }
 }
