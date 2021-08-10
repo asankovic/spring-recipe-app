@@ -3,6 +3,7 @@ package org.foi.asankovic.spring5recipeapp.services;
 import org.foi.asankovic.spring5recipeapp.converters.RecipeCommandToRecipe;
 import org.foi.asankovic.spring5recipeapp.converters.RecipeToRecipeCommand;
 import org.foi.asankovic.spring5recipeapp.domain.Recipe;
+import org.foi.asankovic.spring5recipeapp.exceptions.NotFoundException;
 import org.foi.asankovic.spring5recipeapp.repositories.RecipeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -76,5 +77,14 @@ class RecipeServiceImplTest {
 
         //then
         verify(recipeRepository).deleteById(anyLong());
+    }
+
+    @Test
+    void findByIdNotFound() {
+        Optional<Recipe> recipeOptional = Optional.empty();
+
+        when(recipeRepository.findById(anyLong())).thenReturn(recipeOptional);
+
+        assertThrows(NotFoundException.class, () -> recipeService.findById(1L));
     }
 }

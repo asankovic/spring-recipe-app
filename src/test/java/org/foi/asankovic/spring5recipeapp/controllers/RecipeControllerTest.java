@@ -2,6 +2,7 @@ package org.foi.asankovic.spring5recipeapp.controllers;
 
 import org.foi.asankovic.spring5recipeapp.commands.RecipeCommand;
 import org.foi.asankovic.spring5recipeapp.domain.Recipe;
+import org.foi.asankovic.spring5recipeapp.exceptions.NotFoundException;
 import org.foi.asankovic.spring5recipeapp.services.RecipeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,9 @@ class RecipeControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(recipeController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(recipeController)
+                .setControllerAdvice(ControllerExceptionHandler.class)
+                .build();
     }
 
     @Test
@@ -52,6 +55,24 @@ class RecipeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("recipe/show"))
                 .andExpect(model().attributeExists("recipe"));
+    }
+
+    @Test
+    void showByIdNotFound() throws Exception {
+
+        when(recipeService.findById(anyLong())).thenThrow(NotFoundException.class);
+
+        mockMvc.perform(get("/recipe/1/show"))
+                .andExpect(status().isNotFound())
+                .andExpect(view().name("404error"));
+    }
+
+    @Test
+    void showByIdBadRequest() throws Exception {
+
+        mockMvc.perform(get("/recipe/asdf/show"))
+                .andExpect(status().isBadRequest())
+                .andExpect(view().name("400error"));
     }
 
     @Test
@@ -71,11 +92,25 @@ class RecipeControllerTest {
 
         mockMvc.perform(post("/recipe")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                //   .param("id", "")
-                //  .param("description", "some string"))
+                .param("id", "")
+                .param("description", "description")
+                .param("directions", "directions")
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/recipe/"+ ID + "/show"));
+    }
+
+    @Test
+    void saveOrUpdateValidationFail() throws Exception {
+        RecipeCommand command = new RecipeCommand();
+        command.setId(ID);
+
+        mockMvc.perform(post("/recipe")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                )
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("recipe"))
+                .andExpect(view().name("recipe/recipeForm"));
     }
 
     @Test

@@ -2,10 +2,16 @@ package org.foi.asankovic.spring5recipeapp.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.foi.asankovic.spring5recipeapp.commands.RecipeCommand;
+import org.foi.asankovic.spring5recipeapp.exceptions.NotFoundException;
 import org.foi.asankovic.spring5recipeapp.services.RecipeService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.validation.Valid;
 
 /**
  * Created by Sankovic on 2.8.2021.
@@ -34,7 +40,15 @@ public class RecipeController {
     }
 
     @PostMapping
-    public String saveOrUpdate(@ModelAttribute RecipeCommand recipeCommand){
+    public String saveOrUpdate(@Valid @ModelAttribute("recipe") RecipeCommand recipeCommand, BindingResult bindingResult){
+
+        if(bindingResult.hasErrors()){
+            bindingResult.getAllErrors().forEach(objectError -> {
+                log.debug(objectError.toString());
+            });
+            return "recipe/recipeForm";
+        }
+
         RecipeCommand savedRecipe = recipeService.saveRecipeCommand(recipeCommand);
         return "redirect:/recipe/"+ savedRecipe.getId()+ "/show";
     }
@@ -50,5 +64,20 @@ public class RecipeController {
         log.debug("Deleting id: " + id);
         recipeService.deleteById(Long.valueOf(id));
         return "redirect:/";
+    }
+
+    //@ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotFoundException.class)
+    public ModelAndView handleNotFoundException(Exception ex){
+
+        log.error("Handling not found exception!");
+        log.error(ex.getMessage());
+        ModelAndView modelAndView = new ModelAndView();
+
+        modelAndView.setViewName("404error");
+        modelAndView.setStatus(HttpStatus.NOT_FOUND);
+        modelAndView.addObject("exception", ex);
+
+        return modelAndView;
     }
 }

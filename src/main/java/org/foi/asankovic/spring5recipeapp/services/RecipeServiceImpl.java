@@ -5,6 +5,7 @@ import org.foi.asankovic.spring5recipeapp.commands.RecipeCommand;
 import org.foi.asankovic.spring5recipeapp.converters.RecipeCommandToRecipe;
 import org.foi.asankovic.spring5recipeapp.converters.RecipeToRecipeCommand;
 import org.foi.asankovic.spring5recipeapp.domain.Recipe;
+import org.foi.asankovic.spring5recipeapp.exceptions.NotFoundException;
 import org.foi.asankovic.spring5recipeapp.repositories.RecipeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,8 @@ public class RecipeServiceImpl implements RecipeService{
     public Recipe findById(Long id) {
         Optional<Recipe> recipeOptional = recipeRepository.findById(id);
         if (recipeOptional.isEmpty()) {
-            throw new RuntimeException("Recipe Not Found!");
+            //throw new RuntimeException("Recipe Not Found!");
+            throw new NotFoundException("Recipe Not Found! For ID value: " + id);
         }
         return recipeOptional.get();
     }
